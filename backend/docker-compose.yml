@@ -1,0 +1,28 @@
+version: '3'
+services:
+  webserver:
+    image: nginx:1.21.6-alpine
+    container_name: tiny_shop_webserver
+    restart: unless-stopped
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - ./.docker/nginx/ssl:/etc/ssl
+      - ./.docker/nginx/conf.d:/etc/nginx/conf.d
+      - ./.docker/data/nginx/log:/var/log/nginx
+      - ./.docker/web:/var/www/tinyshop
+  # links:
+  #   - api:api
+  db:
+    image: bitnami/postgresql:14.2.0
+    container_name: tiny_shop_db
+    restart: unless-stopped
+    environment:
+      - POSTGRESQL_PASSWORD=${DB_PASSWORD}
+      - POSTGRESQL_USERNAME=${DB_USER}
+      - POSTGRESQL_DATABASE=${DB_NAME}
+    ports:
+      - 5432:5432
+    volumes:
+      - ./.docker/data/postgres:/bitnami/postgresql
